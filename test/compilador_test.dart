@@ -31,4 +31,25 @@ void main() {
     //assert
     expect(token, tokenEsperado);
   });
+
+  test('Soma', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.mais, '+'),
+      Token(TipoToken.numero, '420'),
+    ];
+
+    final entrada = '69+420';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
 }

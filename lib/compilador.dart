@@ -1,7 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-enum TipoToken {
-  numero,
-}
+enum TipoToken { numero, mais }
 
 class Token {
   Token(this.tipo, this.lexema);
@@ -27,21 +25,34 @@ class Tokenizador {
   Tokenizador(this.entrada);
 
   int posicao = 0;
-  String token = '';
   final String entrada;
   // final _NUMEROS = '0123456789';
 
+  String peek() {
+    return entrada[posicao];
+  }
+
   Token proximoToken() {
-    for (var i = 0; i < entrada.length; i++) {
-      final peek = entrada[posicao];
+    var buffer = StringBuffer();
 
-      if (int.tryParse(peek) != null) {
-        token += peek;
-      }
-      posicao += 1;
+    if (int.tryParse(peek()) != null) {
+      do {
+        buffer.write(peek());
+        posicao += 1;
+
+        if (posicao >= entrada.length) {
+          break;
+        }
+      } while (int.tryParse(peek()) != null);
+
+      return Token(TipoToken.numero, buffer.toString());
     }
-    return Token(TipoToken.numero, token);
 
-    throw Exception("Não implementado ainda.");
+    if (peek() == '+') {
+      posicao += 1;
+      return Token(TipoToken.mais, '+');
+    }
+
+    return Token(TipoToken.numero, buffer.toString());
   }
 }
