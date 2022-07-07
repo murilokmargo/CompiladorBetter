@@ -52,4 +52,172 @@ void main() {
     //assert
     expect(tokensRecebidos, tokensEsperado);
   });
+
+  test('Subtração', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.menos, '-'),
+      Token(TipoToken.numero, '420'),
+    ];
+
+    final entrada = '69-420';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
+
+  test('Multiplicação', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.multiplicacao, '*'),
+      Token(TipoToken.numero, '420'),
+    ];
+
+    final entrada = '69*420';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
+
+  test('Divisão', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.divisao, '/'),
+      Token(TipoToken.numero, '420'),
+    ];
+
+    final entrada = '69/420';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
+
+  test('Potência', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.potencia, '^'),
+      Token(TipoToken.numero, '420'),
+    ];
+
+    final entrada = '69^420';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
+
+  test('Abre parênteses', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.abreParenteses, '('),
+      Token(TipoToken.numero, '420'),
+    ];
+
+    final entrada = '69(420';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
+
+  test('Fecha parênteses', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.fechaParenteses, ')'),
+      Token(TipoToken.numero, '420'),
+    ];
+
+    final entrada = '69)420';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
+
+  test('Abre colchetes', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.abreColchetes, '['),
+      Token(TipoToken.numero, '420'),
+    ];
+
+    final entrada = '69[420';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
+
+  test('Fecha colchetes', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.fechaColchetes, ']'),
+      Token(TipoToken.numero, '420'),
+    ];
+
+    final entrada = '69]420';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
 }

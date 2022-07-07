@@ -1,5 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-enum TipoToken { numero, mais }
+enum TipoToken {
+  numero,
+  mais,
+  menos,
+  multiplicacao,
+  divisao,
+  potencia,
+  abreParenteses,
+  fechaParenteses,
+  abreColchetes,
+  fechaColchetes
+}
 
 class Token {
   Token(this.tipo, this.lexema);
@@ -51,6 +62,46 @@ class Tokenizador {
     if (peek() == '+') {
       posicao += 1;
       return Token(TipoToken.mais, '+');
+    }
+
+    if (peek() == '-') {
+      posicao += 1;
+      return Token(TipoToken.menos, '-');
+    }
+
+    if (peek() == '*') {
+      posicao += 1;
+      return Token(TipoToken.multiplicacao, '*');
+    }
+
+    if (peek() == '/') {
+      posicao += 1;
+      return Token(TipoToken.divisao, '/');
+    }
+
+    if (peek() == '^') {
+      posicao += 1;
+      return Token(TipoToken.potencia, '^');
+    }
+
+    if (peek() == '(') {
+      posicao += 1;
+      return Token(TipoToken.abreParenteses, '(');
+    }
+
+    if (peek() == ')') {
+      posicao += 1;
+      return Token(TipoToken.fechaParenteses, ')');
+    }
+
+    if (peek() == '[') {
+      posicao += 1;
+      return Token(TipoToken.abreColchetes, '[');
+    }
+
+    if (peek() == ']') {
+      posicao += 1;
+      return Token(TipoToken.fechaColchetes, ']');
     }
 
     return Token(TipoToken.numero, buffer.toString());
