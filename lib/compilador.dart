@@ -9,7 +9,8 @@ enum TipoToken {
   abreParenteses,
   fechaParenteses,
   abreColchetes,
-  fechaColchetes
+  fechaColchetes,
+  exp
 }
 
 class Token {
@@ -102,6 +103,22 @@ class Tokenizador {
     if (peek() == ']') {
       posicao += 1;
       return Token(TipoToken.fechaColchetes, ']');
+    }
+
+    if (peek() == 'e') {
+      posicao += 1;
+      if (peek() == 'x') {
+        posicao += 1;
+        if (peek() == 'p') {
+          posicao += 1;
+          return Token(TipoToken.exp, 'exp');
+        }
+      }
+    }
+
+    if (peek() == ' ') {
+      posicao += 1;
+      return proximoToken();
     }
 
     return Token(TipoToken.numero, buffer.toString());
