@@ -272,7 +272,7 @@ void main() {
       Token(TipoToken.fechaColchetes, ']'),
     ];
 
-    final entrada = '69 [420]';
+    final entrada = '  69 [420] ';
 
     final tokenizador = Tokenizador(entrada);
 
@@ -280,6 +280,25 @@ void main() {
     var tokensRecebidos = [];
     tokensRecebidos.add(tokenizador.proximoToken());
     tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    tokensRecebidos.add(tokenizador.proximoToken());
+    //assert
+    expect(tokensRecebidos, tokensEsperado);
+  });
+
+  test('Erro', () {
+    //arrange
+    final tokensEsperado = [
+      Token(TipoToken.numero, '69'),
+      Token(TipoToken.erro, 'd')
+    ];
+
+    final entrada = '  69 ddsdre';
+
+    final tokenizador = Tokenizador(entrada);
+
+    //act
+    var tokensRecebidos = [];
     tokensRecebidos.add(tokenizador.proximoToken());
     tokensRecebidos.add(tokenizador.proximoToken());
     //assert

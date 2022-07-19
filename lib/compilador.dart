@@ -10,7 +10,8 @@ enum TipoToken {
   fechaParenteses,
   abreColchetes,
   fechaColchetes,
-  exp
+  exp,
+  erro
 }
 
 class Token {
@@ -121,6 +122,6 @@ class Tokenizador {
       return proximoToken();
     }
 
-    return Token(TipoToken.numero, buffer.toString());
+    return Token(TipoToken.erro, peek());
   }
 }
