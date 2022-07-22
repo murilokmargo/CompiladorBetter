@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "Dart (bin\\compilador.dart)",
+            "type": "dart",
+            "request": "launch",
+            "program": "bin\\compilador.dart"
+        }
+    ]
+}

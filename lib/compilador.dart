@@ -11,7 +11,8 @@ enum TipoToken {
   abreColchetes,
   fechaColchetes,
   exp,
-  erro
+  erro,
+  eof
 }
 
 class Token {
@@ -47,6 +48,10 @@ class Tokenizador {
 
   Token proximoToken() {
     var buffer = StringBuffer();
+
+    if (posicao + 1 > entrada.length) {
+      return Token(TipoToken.eof, '\$');
+    }
 
     if (int.tryParse(peek()) != null) {
       do {
