@@ -1,7 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:collection';
+import 'dart:ffi';
 import 'dart:io';
-
+import 'dart:math' as math;
 import 'package:compilador/compilador.dart';
 import 'package:compilador/pilha.dart';
 
@@ -13,7 +14,6 @@ const p = 'P';
 const eLinha = "E'";
 const e = 'E';
 const fimDeCadeia = '\$';
-
 const mais = '+';
 const menos = '-';
 const multiplicacao = '*';
@@ -48,28 +48,56 @@ class Parser {
 
   final Tokenizador tokenizador;
   final tabela = criaTabela();
-  void parse() {
+  num parse() {
     var token = tokenizador.proximoToken();
+    if (token.tipo == TipoToken.erro) {
+      print("Erro léxico:  token'${token.lexema}' não reconhecido. ");
+      exit(1);
+    }
     final pilha = Pilha<String>();
+    final pilhaOperando = <Token>[];
+    final pilhaOperador = Pilha<Token>();
     pilha.push(fimDeCadeia);
     pilha.push(e);
 
     while (pilha.top() != fimDeCadeia) {
       if (matchToken(pilha.top(), token)) {
-        print(
-            "Deu match: ${pilha.top()} com a nossa entrada: ${token.lexema}, então removemos o ${pilha.top()}");
+        if (token.tipo == TipoToken.numero) {
+          pilhaOperando.add(token);
+        } else if (token.tipo == TipoToken.abreParenteses) {
+          pilhaOperador.push(token);
+        } else if (token.tipo == TipoToken.fechaParenteses) {
+          while (pilhaOperador.isNotEmpty &&
+              pilhaOperador.top().tipo != TipoToken.abreParenteses) {
+            pilhaOperando.add(pilhaOperador.pop());
+          }
+          if (pilhaOperador.isNotEmpty) {
+            pilhaOperador.pop();
+          }
+        } else if (ops.contains(token.tipo)) {
+          while (pilhaOperador.isNotEmpty &&
+              pilhaOperador.top().tipo != TipoToken.abreParenteses &&
+              precede(pilhaOperador.top(), token)) {
+            pilhaOperando.add(pilhaOperador.pop());
+          }
+          pilhaOperador.push(token);
+        }
+
+        //print("Deu match: ${pilha.top()} com a nossa entrada: ${token.lexema}, então removemos o ${pilha.top()}");
         pilha.pop();
         token = tokenizador.proximoToken();
+        if (token.tipo == TipoToken.erro) {
+          print("Erro léxico:  token'${token.lexema}' não reconhecido. ");
+          exit(1);
+        }
       } else if (isTerminal(pilha.top())) {
         print('Erro sintático: o símbolo ${token.lexema} não é reconhecido.');
         exit(1);
       } else if (tabela[Chave(pilha.top(), token.tipo)] == null) {
-        print(
-            'Erro sintático: o símbolo ${token.lexema} não é reconhecidoaaaa.');
+        print('Erro sintático: o símbolo ${token.lexema} não é reconhecido.');
         exit(1);
       } else if (tabela[Chave(pilha.top(), token.tipo)] != null) {
-        print(
-            'Empilhou: ${tabela[Chave(pilha.top(), token.tipo)]!.reversed} na pilha: $pilha e saiu: ${pilha.top()} ');
+        //print('Empilhou: ${tabela[Chave(pilha.top(), token.tipo)]!.reversed} na pilha: $pilha e saiu: ${pilha.top()} ');
         var elementos = tabela[Chave(pilha.top(), token.tipo)]!.reversed;
         pilha.pop();
         for (var elemento in elementos) {
@@ -79,13 +107,19 @@ class Parser {
         }
       }
     }
+    while (pilhaOperador.isNotEmpty) {
+      pilhaOperando.add(pilhaOperador.pop());
+    }
+    //print("Pilha operandos: $pilhaOperando");
+    // print("E o resultado é: ${evaluate(pilhaOperando)}");
+    return num.parse(evaluate(pilhaOperando));
   }
 }
 
 HashMap<Chave, List<String>> criaTabela() {
   var tabela = HashMap<Chave, List<String>>();
   tabela[Chave(e, TipoToken.exp)] = [t, eLinha];
-  tabela[Chave(e, TipoToken.abreColchetes)] = [t, eLinha];
+  tabela[Chave(e, TipoToken.abreParenteses)] = [t, eLinha];
   tabela[Chave(e, TipoToken.numero)] = [t, eLinha];
 
   tabela[Chave(eLinha, TipoToken.mais)] = [mais, t, eLinha];
@@ -132,8 +166,33 @@ HashMap<Chave, List<String>> criaTabela() {
   return tabela;
 }
 
+final peso = HashMap<TipoToken, int>.of({
+  TipoToken.mais: 1,
+  TipoToken.menos: 1,
+  TipoToken.multiplicacao: 2,
+  TipoToken.divisao: 2,
+  TipoToken.potencia: 3,
+  TipoToken.exp: 4,
+});
+
+const List<TipoToken> ops = [
+  TipoToken.mais,
+  TipoToken.menos,
+  TipoToken.multiplicacao,
+  TipoToken.divisao,
+  TipoToken.potencia,
+  TipoToken.exp
+];
+
 bool isTerminal(String simbolo) {
   return simbolo[0] != simbolo[0].toUpperCase();
+}
+
+bool precede(Token operador, Token token) {
+  if (peso[operador.tipo]! >= peso[token.tipo]!) {
+    return true;
+  }
+  return false;
 }
 
 bool matchToken(String lexema, Token token) {
@@ -146,4 +205,52 @@ bool matchToken(String lexema, Token token) {
   }
 
   return false;
+}
+
+String evaluate(List<Token> expressao) {
+  final resultado = Pilha<String>();
+  for (final simbolo in expressao) {
+    if (simbolo.tipo == TipoToken.numero) {
+      resultado.push(simbolo.lexema);
+    } else if (simbolo.tipo != TipoToken.exp) {
+      String operando2 = resultado.pop();
+      String operando1 = resultado.pop();
+      String aux = operacaoBinaria(simbolo.tipo, operando1, operando2);
+
+      resultado.push(aux);
+    } else {
+      String operando = resultado.pop();
+
+      String aux = operacaoUnaria(simbolo.tipo, operando);
+
+      resultado.push(aux);
+    }
+  }
+  return resultado.top().replaceAll(',', '.');
+}
+
+String operacaoBinaria(TipoToken operador, String operando1, String operando2) {
+  num op1 = num.parse(operando1.replaceAll(',', '.'));
+  num op2 = num.parse(operando2.replaceAll(',', '.'));
+  if (operador == TipoToken.mais) {
+    return (op1 + op2).toString();
+  }
+  if (operador == TipoToken.menos) {
+    return (op1 - op2).toString();
+  }
+  if (operador == TipoToken.multiplicacao) {
+    return (op1 * op2).toString();
+  }
+  if (operador == TipoToken.divisao) {
+    return (op1 / op2).toString();
+  }
+  if (operador == TipoToken.potencia) {
+    return math.pow(op1, op2).toString();
+  }
+  return "Erro";
+}
+
+String operacaoUnaria(TipoToken operador, String operando) {
+  num op = num.parse(operando.replaceAll(',', '.'));
+  return math.exp(op).toString();
 }

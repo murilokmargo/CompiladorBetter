@@ -61,7 +61,7 @@ class Tokenizador {
         if (posicao >= entrada.length) {
           break;
         }
-      } while (int.tryParse(peek()) != null);
+      } while (int.tryParse(peek()) != null || peek() == "," || peek() == ".");
 
       return Token(TipoToken.numero, buffer.toString());
     }

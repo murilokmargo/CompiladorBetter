@@ -12,5 +12,7 @@ void main(List<String> arguments) {
 
   final parser = Parser(tokenizador);
 
-  parser.parse();
+  final resultado = parser.parse();
+
+  print("O resultado é: $resultado");
 }
